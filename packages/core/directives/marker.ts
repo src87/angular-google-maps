@@ -39,7 +39,7 @@ let markerId = 0;
   selector: 'agm-marker',
   inputs: [
     'latitude', 'longitude', 'title', 'label', 'draggable: markerDraggable', 'iconUrl',
-    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation'
+    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation', 'optimized'
   ],
   outputs: ['markerClick', 'dragEnd', 'mouseOver', 'mouseOut']
 })
@@ -103,6 +103,11 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
    */
   // tslint:disable-next-line:no-input-rename
   @Input('markerClickable') clickable: boolean = true;
+
+  /*
+   * Enable optimized rendering of marker - allows multiple markers to be rendered as single element
+   */
+  @Input() optimized: boolean = true;
 
   /**
    * Which animation to play when marker is added to a map.
@@ -196,6 +201,9 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
     }
     if (changes['animation']) {
       this._markerManager.updateAnimation(this);
+    }
+    if (changes['optimized']) {
+      this._markerManager.updateOptimized(this);
     }
   }
 

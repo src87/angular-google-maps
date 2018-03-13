@@ -40,7 +40,8 @@ describe('MarkerManager', () => {
                zIndex: 1,
                title: undefined,
                clickable: true,
-               animation: undefined
+               animation: undefined,
+               optimized: true
              });
            }));
   });
@@ -88,7 +89,8 @@ describe('MarkerManager', () => {
                zIndex: 1,
                title: undefined,
                clickable: true,
-               animation: undefined
+               animation: undefined,
+               optimized: true
              });
              const iconUrl = 'http://angular-maps.com/icon.png';
              newMarker.iconUrl = iconUrl;
@@ -122,7 +124,8 @@ describe('MarkerManager', () => {
                zIndex: 1,
                title: undefined,
                clickable: true,
-               animation: undefined
+               animation: undefined,
+               optimized: true
              });
              const opacity = 0.4;
              newMarker.opacity = opacity;
@@ -157,7 +160,8 @@ describe('MarkerManager', () => {
                zIndex: 1,
                title: undefined,
                clickable: true,
-               animation: undefined
+               animation: undefined,
+               optimized: true
              });
              newMarker.visible = true;
              return markerManager.updateVisible(newMarker).then(
@@ -190,12 +194,48 @@ describe('MarkerManager', () => {
                zIndex: 1,
                title: undefined,
                clickable: true,
-               animation: undefined
+               animation: undefined,
+               optimized: true
              });
              const zIndex = 10;
              newMarker.zIndex = zIndex;
              return markerManager.updateZIndex(newMarker).then(
                  () => { expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex); });
+           })));
+  });
+
+    describe('set optimized option', () => {
+    it('should update that marker via setOptions method when the optimized value changes',
+       async(inject(
+           [MarkerManager, GoogleMapsAPIWrapper],
+           (markerManager: MarkerManager, apiWrapper: GoogleMapsAPIWrapper) => {
+             const newMarker = new AgmMarker(markerManager);
+             newMarker.latitude = 34.4;
+             newMarker.longitude = 22.3;
+             newMarker.label = 'A';
+             newMarker.visible = false;
+
+             const markerInstance: Marker = jasmine.createSpyObj('Marker', ['setMap', 'setOptions']);
+             (<any>apiWrapper.createMarker).and.returnValue(Promise.resolve(markerInstance));
+
+             markerManager.addMarker(newMarker);
+             expect(apiWrapper.createMarker).toHaveBeenCalledWith({
+               position: {lat: 34.4, lng: 22.3},
+               label: 'A',
+               draggable: false,
+               icon: undefined,
+               visible: false,
+               opacity: 1,
+               zIndex: 1,
+               title: undefined,
+               clickable: true,
+               animation: undefined,
+               optimized: true
+             });
+             const optimizedValue = false;
+             newMarker.optimized = optimizedValue;
+             return markerManager.updateOptimized(newMarker).then(
+                 () => { expect(markerInstance.setOptions).toHaveBeenCalledWith({optimized: optimizedValue}); });
            })));
   });
 });
